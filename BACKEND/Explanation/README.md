@@ -45,4 +45,4 @@ We welcome contributions to improve this documentation. If you find any errors o
 
 ## Contact
 
-If you have any questions or need further assistance, please contact our support team at [NUI Github Repo](https://github.com/FlorianCliquet/NUI).
+If you have any questions or need further assistance, please contact us at [NUI Github Repo](https://github.com/FlorianCliquet/NUI).

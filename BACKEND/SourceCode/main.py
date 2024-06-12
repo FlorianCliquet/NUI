@@ -39,7 +39,7 @@ def tests():
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
-cache = Cache(app, config={'CACHE_TYPE': 'simple', 'CACHE_DEFAULT_TIMEOUT': 3600})  # Cache timeout set to 1 hour
+cache = Cache(app, config={'CACHE_TYPE': 'simple', 'CACHE_DEFAULT_TIMEOUT': 600})  # Cache timeout set to 10 min
 
 class PingScanAPI(Resource):
     @cache.cached()
@@ -57,8 +57,8 @@ class HostInfoAPI(Resource):
 
 class ClearCacheAPI(Resource):
     def post(self):
-        # Delete the cache
-        cache.delete('cachedNodes')
+        # Clear the cache
+        cache.clear()
         return {'message': 'Cache cleared successfully'}, 200
 
 

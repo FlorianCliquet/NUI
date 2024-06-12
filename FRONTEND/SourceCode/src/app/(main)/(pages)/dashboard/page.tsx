@@ -4,94 +4,118 @@ import React, { useState, useEffect } from 'react';
 import ReactFlow, { MiniMap } from 'react-flow-renderer';
 
 const Dashboard = () => {
-  const [nodes, setNodes] = useState([]);
-  const [edges, setEdges] = useState([]);
-  const [isLoading, setIsLoading] = useState(false); // State to track loading state
+  const [nodes, setNodes] = useState<{ id: any; type: string; data: { label: any; }; position: { x: number; y: number; }; }[]>([]);
+  const [edges, setEdges] = useState<{ id: string; source: any; target: any; }[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    fetchNetworkData(); // Fetch network data when component mounts
-  }, []); 
+    fetchNetworkData();
+  }, []);
 
-  const fetchNetworkData = () => {
-    setIsLoading(true); // Set loading state to true when fetching data
-    const cachedNodes = localStorage.getItem('cachedNodes');
-    if (cachedNodes) {
-      setNodes(JSON.parse(cachedNodes));
-      setIsLoading(false); // Set loading state to false if data is retrieved from cache
-    } else {
-      fetch('http://localhost:5000/api/ping_scan', {
+  const fetchNetworkData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/ping_scan', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-      })
-       .then(response => response.json())
-       .then(data => {
-          const formattedNodes = data.map((device, index) => {
-            const position = index === 0 ? { x: 0.5, y: 0.5 } : calculatePosition(index, data.length);
-            return {
-              id: device.addresses.ipv4,
-              type: 'default',
-              data: { label: device.hostnames[0].name || device.addresses.ipv4 },
-              position,
-            };
-          });
-          setNodes(formattedNodes);
+      });
+      const data = await response.json();
+      const formattedNodes = formatNodes(data);
+      const deviceEdges = createEdges(formattedNodes);
 
-          // Create edges between devices and the router
-          const deviceEdges = formattedNodes.slice(1).map(node => ({
-            id: `${node.id}-edge`,
-            source: node.id,
-            target: formattedNodes[0].id,
-          }));
-          setEdges(deviceEdges);
-
-          localStorage.setItem('cachedNodes', JSON.stringify(formattedNodes)); // Cache nodes
-          setIsLoading(false); // Set loading state to false after data is fetched
-        })
-       .catch(error => {
-          console.error('Error fetching data:', error);
-          setIsLoading(false); // Set loading state to false if there's an error
-        });
+      setNodes(formattedNodes);
+      setEdges(deviceEdges);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleScanNetwork = () => {
-    setNodes([]); // Clear nodes when "Scan Network" button is clicked
-    setEdges([]); // Clear edges when "Scan Network" button is clicked
-    fetch('http://localhost:5000/api/clear_cache', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(() => console.log('Cache cleared'))
-      .catch(error => console.error('Error clearing cache:', error)
-    )
-    location.reload(); // Reload the page to clear the cache
-    fetchNetworkData(); // Fetch network data when "Scan Network" button is clicked
+  const formatNodes = (data: any[]) => {
+    return data.map((device, index) => {
+      const position = index === 0 ? { x: 0, y: 0 } : calculatePosition(index, data.length);
+      return {
+        id: device.addresses.ipv4,
+        type: 'default',
+        data: { label: device.hostnames[0].name || device.addresses.ipv4 },
+        position,
+      };
+    });
   };
 
-  // Function to calculate position of nodes in a circle around the center
-  const calculatePosition = (index, totalDevices) => {
-    const radius = 200; // Adjust radius as needed
-    const angle = (Math.PI * 2) / totalDevices;
-    const centerX = 0.5;
-    const centerY = 0.5;
-    const x = centerX + radius * Math.cos(angle * index);
-    const y = centerY + radius * Math.sin(angle * index);
+  const createEdges = (nodes: any[]) => {
+    return nodes.slice(1).map(node => {
+      if (node.position.y > 0) {
+        // Node is in the lower part of the circle
+        return {
+          id: `${node.id}-edge`,
+          source: nodes[0].id,
+          target: node.id,
+        };
+      } else {
+        // Node is in the upper part of the circle
+        return {
+          id: `${node.id}-edge`,
+          source: node.id,
+          target: nodes[0].id,
+        };
+      }
+    });
+  };
+
+  const handleScanNetwork = async () => {
+    setNodes([]);
+    setEdges([]);
+    setIsLoading(true);
+
+    try {
+      const clearCacheResponse = await fetch('http://localhost:5000/api/clear_cache', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!clearCacheResponse.ok) {
+        throw new Error('Failed to clear cache');
+      }
+
+      console.log('Cache cleared');
+      await fetchNetworkData();
+    } catch (error) {
+      console.error('Error clearing cache or fetching data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const calculatePosition = (index: number, totalDevices: number) => {
+    const radius = 200;
+    const angle = (Math.PI * 2) / (totalDevices - 1);
+    const x = radius * Math.cos(angle * index);
+    const y = radius * Math.sin(angle * index);
     return { x, y };
   };
 
   return (
-    <div style={{ height: '100vh', backgroundColor: '#f0f0f0' }}>
-      <button onClick={handleScanNetwork} disabled={isLoading}>
-        {isLoading ? 'Scanning Network...' : 'Scan Network'}
-      </button>
-      <ReactFlow nodes={nodes} edges={edges} onLoad={() => console.log('Flow loaded')}>
-        <MiniMap />
-      </ReactFlow>
+    <>
+    <div className="flex flex-col gap-4 relative">
+      <h1 className="text-4xl sticky top-0 z-[10] p-6 bg-background/50 backdrop-blur-lg flex items-center border-b">
+        Dashboard
+      </h1>
+      <div style={{ height: '100vh', backgroundColor: '#f0f0f0' }}>
+        <button onClick={handleScanNetwork} disabled={isLoading}>
+          {isLoading ? 'Scanning Network...' : 'Scan Network'}
+        </button>
+        <ReactFlow nodes={nodes} edges={edges} onLoad={() => console.log('Flow loaded')}>
+          <MiniMap />
+        </ReactFlow>
+      </div>
     </div>
+    </>
   );
 };
 

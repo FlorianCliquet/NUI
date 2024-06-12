@@ -80,4 +80,4 @@ only the central node
 ```
 ![graph for 200 node](../asset/NODE%20COORDINATE/200node.png)
 ### Conclusion
-We can see the for a large number of node the cicrcle is not readable but as it's made to scan small / mid networks it's rarelry common to go up to more than 20 node per single router.
+We can see the for a large number of node the circle is not readable but as it's made to scan small / mid networks it's rarelry common to go up to more than 20 node per single router.

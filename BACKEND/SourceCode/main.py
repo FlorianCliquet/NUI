@@ -1,7 +1,10 @@
 #--------------------------------->[IMPORT]<------------------------------------------#
 import nmap
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from flask_restful import Resource, Api
+from flask_caching import Cache
+
 #-------------------------------------------------------------------------------------#
 
 
@@ -34,9 +37,12 @@ def tests():
 
 #--------------------------------->[FLASK]<------------------------------------------#
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
+cache = Cache(app, config={'CACHE_TYPE': 'simple', 'CACHE_DEFAULT_TIMEOUT': 3600})  # Cache timeout set to 1 hour
 
 class PingScanAPI(Resource):
+    @cache.cached()
     def get(self):
         ping_scan()
         hosts = []
@@ -45,12 +51,20 @@ class PingScanAPI(Resource):
         return jsonify(hosts)
 
 class HostInfoAPI(Resource):
+    @cache.cached()
     def get(self, ip):
         return jsonify(host_info(ip))
+
+class ClearCacheAPI(Resource):
+    def post(self):
+        # Delete the cache
+        cache.delete('cachedNodes')
+        return {'message': 'Cache cleared successfully'}, 200
 
 
 api.add_resource(PingScanAPI, "/api/ping_scan")
 api.add_resource(HostInfoAPI, "/api/host_info/<string:ip>")
+api.add_resource(ClearCacheAPI, "/api/clear_cache")
 
 
 if __name__ == '__main__':

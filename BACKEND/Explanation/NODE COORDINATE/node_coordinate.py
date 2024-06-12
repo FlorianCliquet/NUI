@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 #--------------------------------->[PARAMETERS]<--------------------------------------#
 # Initialize the number of nodes found by nmap , the central node is part of the nb_node
-nb_node = 2
+nb_node = 200
 
 # We define the center of the circle as the router node
 center = (0.5, 0.5)  # Central node (router) position

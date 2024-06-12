@@ -9,7 +9,8 @@ The Homepage is a visually engaging landing page designed to introduce users to 
 ### Google Gemini Effect
 
 The centerpiece of the homepage is the Google Gemini Effect, which dynamically animates SVG paths as the user scrolls down the page. This effect is achieved using Framer Motion's `useScroll` and `useTransform` hooks to manipulate the path lengths based on scroll position.
-This components is from !(aceternity UI)[https://ui.aceternity.com/components/google-gemini-effect].
+This components is from ![Aceternity UI](https://ui.aceternity.com/components/google-gemini-effect)
+
 
 ### Get Started Button
 

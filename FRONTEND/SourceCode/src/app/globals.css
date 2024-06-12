@@ -1,4 +1,6 @@
-
+  /*******************************/
+ /* TAILWIND BASE CONFIG        */
+/*******************************/
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -66,10 +68,6 @@
     --ring: 0 0% 83.1%;
   }
 }
-.fade-out {
-  opacity: 0;
-  transition: opacity 1s ease-out;
-}
 
 @layer base {
   * {
@@ -78,4 +76,19 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+  /*******************************/
+ /* END OF TAILWIND BASE CONFIG */
+/*******************************/
+
+
+
+  /*******************************/
+ /* CUSTOM STYLE                */
+/*******************************/
+
+/* Made for Linkbtn component, for the fadeout animation */
+.fade-out {
+  opacity: 0;
+  transition: opacity 1s ease-out;
 }

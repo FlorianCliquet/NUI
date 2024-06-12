@@ -32,7 +32,7 @@ const Dashboard = () => {
             return {
               id: device.addresses.ipv4,
               type: 'default',
-              data: { label: device.hostnames[0].name || device.addresses.ipv4 },
+              data: { label: (device.hostnames[0].name || device.addresses.ipv4) + (device.vendor[device.addresses.mac]? "\n" + device.vendor[device.addresses.mac] : "") },
               position,
             };
           });

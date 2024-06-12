@@ -1,6 +1,7 @@
 #--------------------------------->[IMPORT]<------------------------------------------#
 import nmap
 from flask import Flask, request, jsonify
+from flask_restful import Resource, Api
 #-------------------------------------------------------------------------------------#
 
 
@@ -33,25 +34,29 @@ def tests():
         print(nm[host])
     print(host_info("192.168.1.27"))
 
-tests()
 #-----------------------------------------------------------------------------------#
 
 
 #--------------------------------->[FLASK]<------------------------------------------#
 app = Flask(__name__)
+api = Api(app)
 
-@app.route("/ping_scan", methods=["GET"])
-def get_ping_scan():
-    """
-    This function is used to get the list of active hosts.
-    """
-    ping_scan()
-    hosts = nm.all_hosts()
-    return jsonify(hosts)
+class PingScanAPI(Resource):
+    def get(self):
+        ping_scan()
+        hosts = []
+        for host in nm.all_hosts():
+            hosts.append(nm[host])
+        return jsonify(hosts)
+    
+class HostInfoAPI(Resource):
+    def get(self, ip):
+        return jsonify(host_info(ip))
+    
+    
+api.add_resource(PingScanAPI, "/api/ping_scan")
+api.add_resource(HostInfoAPI, "/api/host_info/<string:ip>")
 
 
-def get_host_info(ip):
-    """
-    This function is used to get the full info about an active host.
-    """
-    return jsonify(host_info(ip))
+if __name__ == '__main__':
+    app.run(debug=True)

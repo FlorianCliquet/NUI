@@ -1,5 +1,6 @@
-import Image from "next/image";
-
+import React from 'react'
 export default function Home() {
-  return <main></main>
+  return <main>
+    <h1>Network scanner</h1>
+  </main>
 }

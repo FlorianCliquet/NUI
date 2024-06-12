@@ -41,6 +41,7 @@ def tests():
 app = Flask(__name__)
 api = Api(app)
 
+<<<<<<< HEAD
 class PingScanAPI(Resource):
     def get(self):
         ping_scan()
@@ -56,6 +57,16 @@ class HostInfoAPI(Resource):
     
 api.add_resource(PingScanAPI, "/api/ping_scan")
 api.add_resource(HostInfoAPI, "/api/host_info/<string:ip>")
+=======
+@app.route("/api/ping_scan", methods=["GET"])
+def get_ping_scan():
+    """
+    This function is used to get the list of active hosts.
+    """
+    ping_scan()
+    hosts = nm.all_hosts()
+    return jsonify(hosts)
+>>>>>>> 2c31365 (start frontend)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-// pages/index.js
+// page.js
 'use client';
 import React from 'react';
 import LoadingSpinner from './components/Loading';
@@ -6,7 +6,7 @@ import ScanButton from './components/ScanButton';
 import NetworkGraph from './components/NetworkGraph';
 import useFetchNetworkData from './hooks/useFetchNetworkData';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
-
+import FlowInstance from './components/FlowInstance';
 const Dashboard = () => {
   const { nodes, edges, isLoading, fetchNetworkData } = useFetchNetworkData();
 
@@ -22,6 +22,7 @@ const Dashboard = () => {
       },
     });
     fetchNetworkData();
+    console.log(nodes);
   };
 
   return (
@@ -45,7 +46,9 @@ const Dashboard = () => {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={30} className="relative sm:block">
-            {isLoading ? <LoadingSpinner /> : <div></div>}
+            {isLoading ? <LoadingSpinner /> : (
+              <></>
+        )}
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>

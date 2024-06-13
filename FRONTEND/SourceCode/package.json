@@ -22,6 +22,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-flow-renderer": "^10.3.17",
+    "react-resizable-panels": "^2.0.19",
+    "reactflow": "^11.11.3",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7"
   },

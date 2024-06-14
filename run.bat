@@ -3,6 +3,7 @@ REM Description: Run this script to set up and start the app on Windows.
 
 REM SETTINGS
 set OPENBROWSER=true
+set URL="http://localhost:3000"
 
 chcp 65001 >NUL
 setlocal enabledelayedexpansion
@@ -58,7 +59,7 @@ echo.
 REM Open the app in the default browser
 if %OPENBROWSER%==true (
     echo 🌐 Opening the app in the default browser.
-    start "" "http://localhost:3000"
+    start "" %URL%
     echo.
 )
 

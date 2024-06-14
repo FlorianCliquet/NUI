@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Run this script to setup and start the app on linux
+
 # Navigate to the backend directory and set up the virtual environment
 echo "Setting up the backend..."
 cd BACKEND

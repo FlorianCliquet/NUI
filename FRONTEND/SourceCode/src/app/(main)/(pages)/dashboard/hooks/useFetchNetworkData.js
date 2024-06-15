@@ -5,6 +5,7 @@ const useFetchNetworkData = (viewportWidth, viewportHeight) => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  var routerIP = "";
 
   const fetchNetworkData = async () => {
     setIsLoading(true);
@@ -15,6 +16,16 @@ const useFetchNetworkData = (viewportWidth, viewportHeight) => {
           'Content-Type': 'application/json',
         },
       });
+      try {
+        const routerResponse = await fetch('http://localhost:5000/api/get_gateway', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        routerIP = await routerResponse.json();
+      } catch (error) { console.error('Error fetching router data:', error); };
+
       const data = await response.json();
       const formattedNodes = formatNodes(data);
       const deviceEdges = createEdges(formattedNodes);
@@ -37,9 +48,23 @@ const useFetchNetworkData = (viewportWidth, viewportHeight) => {
     const centerY = 200;
 
     return data.map((device, index) => {
-      const type = index === 0 ? 'Router' : 'Device';
-      const position = index === 0 ? { x: centerX, y: centerY } : calculatePosition(index - 1, data.length - 1, centerX, centerY);
-      return {
+      var type = 'Device';
+      if (device.addresses.ipv4 === routerIP) {
+        var type = 'Router';
+      }
+
+      var routerindex = data.findIndex((device) => device.addresses.ipv4 === routerIP);
+
+      if (type === 'Router') {
+        var position = { x: centerX, y: centerY };
+      } else {
+        if (index <= routerindex) {
+          var position = calculatePosition(index, data.length - 1, centerX, centerY);
+        } else {
+          var position = calculatePosition(index - 1, data.length - 1, centerX, centerY);
+        }
+      }
+        return {
         id: device.addresses.ipv4,
         type,
         data: { label: device.hostnames[0].name || device.addresses.ipv4 },

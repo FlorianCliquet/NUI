@@ -2,7 +2,7 @@
 'use client';
 import React from 'react';
 import LoadingSpinner from './components/Loading';
-import ScanButton from './components/ScanButton';
+import { ScanButton } from './components/ScanButton';
 import NetworkGraph from './components/NetworkGraph';
 import useFetchNetworkData from './hooks/useFetchNetworkData';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
@@ -30,7 +30,7 @@ const Dashboard = () => {
       <h1 className="text-4xl sticky top-0 z-[10] p-6 bg-background/50 backdrop-blur-lg flex items-center border-b">
         Dashboard
       </h1>
-      <div style={{ height: '100vh', backgroundColor: '#f0f0f0' }}>
+      <div style={{ height: '100vh', backgroundColor: '#f0f0f0', display:'flex', flexDirection:'column', alignItems:'center' }}>
         <ScanButton isLoading={isLoading} onClick={handleScanNetwork} />
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={70}>

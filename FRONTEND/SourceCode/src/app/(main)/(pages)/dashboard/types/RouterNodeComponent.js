@@ -12,7 +12,7 @@ const RouterNodeComponent = ({ data }) => {
 
   return (
     <>
-      {data.type !== 'Trigger' && (
+      {(
         <CustomHandle
           type="source"
           position={Position.Top}

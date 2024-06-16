@@ -1,14 +1,27 @@
-// page.js
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import LoadingSpinner from './components/Loading';
 import { ScanButton } from './components/ScanButton';
 import NetworkGraph from './components/NetworkGraph';
 import useFetchNetworkData from './hooks/useFetchNetworkData';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import FlowInstance from './components/FlowInstance';
+
 const Dashboard = () => {
-  const { nodes, edges, isLoading, fetchNetworkData } = useFetchNetworkData();
+  const { nodes, edges, isLoading: fetchLoading, fetchNetworkData } = useFetchNetworkData();
+  const [isLoading, setIsLoading] = useState(fetchLoading);
+
+  const handleScanNetwork = async () => {
+    setIsLoading(true);
+    await fetch('http://localhost:5000/api/clear_cache', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    await fetchNetworkData();
+    setIsLoading(false);
+  };
 
   const handleClickCanvas = () => {
     console.log('Clicked on canvas');
@@ -19,8 +32,7 @@ const Dashboard = () => {
       <h1 className="text-4xl sticky top-0 z-[10] p-6 bg-background/50 backdrop-blur-lg flex items-center border-b">
         Dashboard
       </h1>
-      <div style={{ height: '100vh', backgroundColor: '#f0f0f0', display:'flex', flexDirection:'column', alignItems:'center' }}>
-        <ScanButton isLoading={isLoading} onClick={handleScanNetwork} />
+      <div className='bg-background' style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={70}>
             <div className="flex h-full items-center justify-center">
@@ -37,15 +49,17 @@ const Dashboard = () => {
           <ResizablePanel defaultSize={30} className="relative sm:block">
             {isLoading ? <LoadingSpinner /> : (
               <>
-            <FlowInstance
-              edges={edges}
-              nodes={nodes}
-            >
-              <h1>Flow Instance</h1>
-            </FlowInstance>                
-            </>
-          )}
-            </ResizablePanel>
+                <FlowInstance
+                  edges={edges}
+                  nodes={nodes}
+                  isLoading={isLoading}
+                  onScan={handleScanNetwork}
+                >
+                  <h1>Flow Instance</h1>
+                </FlowInstance>
+              </>
+            )}
+          </ResizablePanel>
         </ResizablePanelGroup>
       </div>
     </div>

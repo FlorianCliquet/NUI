@@ -1,14 +1,13 @@
-// components/ScanButton.js
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/utils/cn";
 
-export function ScanButton ({ 
-  isLoading, 
+export function ScanButton ({
+  isLoading,
   onClick,
-  containerClassName="rounded-full",
-  className="dark:bg-black bg-white  text-black dark:text-white flex items-center space-x-2",
+  containerClassName = "rounded-full",
+  className = "dark:bg-black bg-white text-black dark:text-white flex items-center space-x-2",
   as: Tag = "button",
   duration = 1,
   clockwise = true,
@@ -45,32 +44,32 @@ export function ScanButton ({
       }, duration * 1000);
       return () => clearInterval(interval);
     }
-  }, [hovered]);
+  }, [hovered, duration, clockwise]);
+
   return (
     <div className="m-1 flex justify-center text-center rounded-full">
       <Tag
-        onMouseEnter={(event) => {
-          setHovered(true);
-        }}
+        onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        onClick={onClick}
         className={cn(
-          "relative flex rounded-full border  content-center bg-black/20 hover:bg-black/10 transition duration-500 dark:bg-white/20 items-center flex-col flex-nowrap gap-10 h-min justify-center overflow-visible p-px decoration-clone w-fit",
+          "relative flex rounded-full border content-center bg-black/20 hover:bg-black/10 transition duration-500 dark:bg-white/20 items-center flex-col flex-nowrap gap-10 h-min justify-center overflow-visible p-2 decoration-clone w-48 h-48",
           containerClassName
         )}
         {...props}
       >
         <div
           className={cn(
-            "w-auto text-white z-10 bg-black px-4 py-2 rounded-full",
+            "w-auto text-white z-10 bg-black px-8 py-4 rounded-full text-lg",
             className
           )}
         >
-      <span className="text-xs text-gray-400"> { isLoading? "Loading..." : "Click to restart scan"} </span>
-      </div>
+          <span className="text-sm text-gray-400">
+            {isLoading ? "Loading..." : "Click to restart scan"}
+          </span>
+        </div>
         <motion.div
-          className={cn(
-            "flex-none inset-0 overflow-hidden absolute z-0 rounded-full"
-          )}
+          className="flex-none inset-0 overflow-hidden absolute z-0 rounded-full"
           style={{
             filter: "blur(2px)",
             position: "absolute",
@@ -89,4 +88,4 @@ export function ScanButton ({
       </Tag>
     </div>
   );
-};
+}

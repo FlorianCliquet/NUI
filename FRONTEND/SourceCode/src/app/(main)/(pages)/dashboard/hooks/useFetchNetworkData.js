@@ -1,4 +1,3 @@
-// hooks/useFetchNetworkData.js
 import { useState, useEffect } from 'react';
 import { Position } from 'react-flow-renderer';
 
@@ -6,7 +5,22 @@ const useFetchNetworkData = (viewportWidth, viewportHeight) => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  var routerIP = "";
+  const [routerIP, setRouterIP] = useState(null);
+
+  const fetchRouterData = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/get_gateway', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      const routerData = await response.json();
+      setRouterIP(routerData);
+    } catch (error) {
+      console.error('Error fetching router data:', error);
+    }
+  };
 
   const fetchNetworkData = async () => {
     setIsLoading(true);
@@ -17,16 +31,6 @@ const useFetchNetworkData = (viewportWidth, viewportHeight) => {
           'Content-Type': 'application/json',
         },
       });
-      try {
-        const routerResponse = await fetch('http://localhost:5000/api/get_gateway', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-        routerIP = await routerResponse.json();
-      } catch (error) { console.error('Error fetching router data:', error); };
-
       const data = await response.json();
       const formattedNodes = formatNodes(data);
       const deviceEdges = createEdges(formattedNodes);
@@ -41,31 +45,29 @@ const useFetchNetworkData = (viewportWidth, viewportHeight) => {
   };
 
   useEffect(() => {
-    fetchNetworkData();
-  }, [viewportWidth, viewportHeight]);
+    fetchRouterData();
+  }, []);
+
+  useEffect(() => {
+    if (routerIP) {
+      fetchNetworkData();
+    }
+  }, [viewportWidth, viewportHeight, routerIP]);
 
   const formatNodes = (data) => {
     const centerX = 500;
     const centerY = 200;
 
     return data.map((device, index) => {
-      var type = 'Device';
-      if (device.addresses.ipv4 === routerIP) {
-        var type = 'Router';
-      }
+      const type = device.addresses.ipv4 === routerIP ? 'Router' : 'Device';
+      const routerIndex = data.findIndex((d) => d.addresses.ipv4 === routerIP);
+      const position = type === 'Router'
+        ? { x: centerX, y: centerY }
+        : calculatePosition(index <= routerIndex ? index : index - 1, data.length - 1, centerX, centerY);
 
-      var routerindex = data.findIndex((device) => device.addresses.ipv4 === routerIP);
+      const handlePosition = type === 'Router' ? null : calculateHandlePosition(position, centerX, centerY);
 
-      if (type === 'Router') {
-        var position = { x: centerX, y: centerY };
-      } else {
-        if (index <= routerindex) {
-          var position = calculatePosition(index, data.length - 1, centerX, centerY);
-        } else {
-          var position = calculatePosition(index - 1, data.length - 1, centerX, centerY);
-        }
-      }
-        return {
+      return {
         id: device.addresses.ipv4,
         type,
         data: { label: device.hostnames[0]?.name || device.addresses.ipv4, handlePosition },
@@ -88,13 +90,13 @@ const useFetchNetworkData = (viewportWidth, viewportHeight) => {
   };
 
   const createEdges = (nodes) => {
-    return nodes.slice(1).map((node) => {
-      const routerNode = nodes[0];
+    const routerNode = nodes.find(node => node.type === 'Router');
+    return nodes.filter(node => node.type !== 'Router').map((node) => {
       const handlePosition = node.data.handlePosition;
-  
-      let sourceHandleId = 'bottom'; 
+      let sourceHandleId = 'bottom';
       let targetHandleId = 'top';
-  
+
+      // Update handle IDs based on the calculated handle position
       if (handlePosition === Position.Right) {
         sourceHandleId = 'right';
         targetHandleId = 'left';
@@ -104,19 +106,21 @@ const useFetchNetworkData = (viewportWidth, viewportHeight) => {
       } else if (handlePosition === Position.Top) {
         sourceHandleId = 'top';
         targetHandleId = 'bottom';
-      } 
-  
+      } else if (handlePosition === Position.Bottom) {
+        sourceHandleId = 'bottom';
+        targetHandleId = 'top';
+      }
+
       return {
         id: `${node.id}-edge`,
         source: routerNode.id,
         sourceHandle: sourceHandleId,
         target: node.id,
-        targetHandle: targetHandleId, 
+        targetHandle: targetHandleId,
         type: 'default',
       };
     });
   };
-  
 
   const calculatePosition = (index, totalDevices, centerX, centerY) => {
     const radius = 400;

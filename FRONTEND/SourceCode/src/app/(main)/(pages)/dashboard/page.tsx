@@ -14,17 +14,6 @@ const Dashboard = () => {
     console.log('Clicked on canvas');
   };
 
-  const handleScanNetwork = async () => {
-    await fetch('http://localhost:5000/api/clear_cache', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    fetchNetworkData();
-    console.log(nodes);
-  };
-
   return (
     <div className="flex flex-col relative">
       <h1 className="text-4xl sticky top-0 z-[10] p-6 bg-background/50 backdrop-blur-lg flex items-center border-b">
@@ -47,9 +36,16 @@ const Dashboard = () => {
           <ResizableHandle />
           <ResizablePanel defaultSize={30} className="relative sm:block">
             {isLoading ? <LoadingSpinner /> : (
-              <></>
-        )}
-          </ResizablePanel>
+              <>
+            <FlowInstance
+              edges={edges}
+              nodes={nodes}
+            >
+              <h1>Flow Instance</h1>
+            </FlowInstance>                
+            </>
+          )}
+            </ResizablePanel>
         </ResizablePanelGroup>
       </div>
     </div>

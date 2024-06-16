@@ -1,5 +1,6 @@
 // hooks/useFetchNetworkData.js
 import { useState, useEffect } from 'react';
+import { Position } from 'react-flow-renderer';
 
 const useFetchNetworkData = (viewportWidth, viewportHeight) => {
   const [nodes, setNodes] = useState([]);
@@ -41,7 +42,7 @@ const useFetchNetworkData = (viewportWidth, viewportHeight) => {
 
   useEffect(() => {
     fetchNetworkData();
-  }, []);
+  }, [viewportWidth, viewportHeight]);
 
   const formatNodes = (data) => {
     const centerX = 500;
@@ -67,31 +68,55 @@ const useFetchNetworkData = (viewportWidth, viewportHeight) => {
         return {
         id: device.addresses.ipv4,
         type,
-        data: { label: device.hostnames[0].name || device.addresses.ipv4 },
+        data: { label: device.hostnames[0]?.name || device.addresses.ipv4, handlePosition },
         position,
       };
     });
   };
 
+  const calculateHandlePosition = (position, routerX, routerY) => {
+    const tolerance = 50;
+    if (position.y > routerY + tolerance) {
+      return Position.Top;
+    } else if (position.y < routerY - tolerance) {
+      return Position.Bottom;
+    } else if (position.x > routerX + tolerance) {
+      return Position.Left;
+    } else {
+      return Position.Right;
+    }
+  };
+
   const createEdges = (nodes) => {
     return nodes.slice(1).map((node) => {
-        if (node.position.y > nodes[0].position.y) {
-            return {
-                id: `${node.id}-edge`,
-                source: nodes[0].id,
-                target: node.id,
-                type: 'default',
-            };
-        } else {
-            return {
-                id: `${node.id}-edge`,
-                source: node.id,
-                target: nodes[0].id,
-                type: 'default',
-            };
-        }
+      const routerNode = nodes[0];
+      const handlePosition = node.data.handlePosition;
+  
+      let sourceHandleId = 'bottom'; 
+      let targetHandleId = 'top';
+  
+      if (handlePosition === Position.Right) {
+        sourceHandleId = 'right';
+        targetHandleId = 'left';
+      } else if (handlePosition === Position.Left) {
+        sourceHandleId = 'left';
+        targetHandleId = 'right';
+      } else if (handlePosition === Position.Top) {
+        sourceHandleId = 'top';
+        targetHandleId = 'bottom';
+      } 
+  
+      return {
+        id: `${node.id}-edge`,
+        source: routerNode.id,
+        sourceHandle: sourceHandleId,
+        target: node.id,
+        targetHandle: targetHandleId, 
+        type: 'default',
+      };
     });
-};
+  };
+  
 
   const calculatePosition = (index, totalDevices, centerX, centerY) => {
     const radius = 400;

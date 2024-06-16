@@ -1,6 +1,6 @@
 'use client'
-import { Button } from '@/components/ui/button'
-import { usePathname } from 'next/navigation'
+import ScanButton from './ScanButton'
+import useFetchNetworkData from './../hooks/useFetchNetworkData'
 import React, { useCallback, useEffect, useState } from 'react'
 
 type Props = {
@@ -10,20 +10,22 @@ type Props = {
 }
 
 const FlowInstance = ({ children, edges, nodes }: Props) => {
+  const { isLoading,fetchNetworkData } = useFetchNetworkData();
+  const handleScanNetwork = async () => {
+    await fetch('http://localhost:5000/api/clear_cache', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    fetchNetworkData();
+    console.log(nodes);
+    console.log("edges",edges);
+  };
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex gap-3 p-4">
-        <Button
-        >
-          Save
-        </Button>
-        <Button
-        >
-          Publish
-        </Button>
+      <ScanButton isLoading={isLoading} onClick={handleScanNetwork} />
       </div>
-      {children}
-    </div>
   )
 }
 

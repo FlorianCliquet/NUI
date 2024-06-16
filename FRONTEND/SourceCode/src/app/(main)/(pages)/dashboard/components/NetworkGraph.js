@@ -26,7 +26,7 @@ const NetworkGraph = ({ nodes, edges, handleClickCanvas }) => {
             nodes={nodes}
             edges={edges}
             onClick={handleClickCanvas}
-            className="!bg-background"
+            className="bg-background"
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
         >

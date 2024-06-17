@@ -1,15 +1,6 @@
 export type EditorCanvasTypes =
-  | 'Email'
-  | 'Condition'
-  | 'AI'
-  | 'Slack'
-  | 'Google Drive'
-  | 'Notion'
-  | 'Custom Webhook'
-  | 'Google Calendar'
-  | 'Trigger'
-  | 'Action'
-  | 'Wait'
+  | 'Router'
+  | 'Device'
 
 export type EditorCanvasCardType = {
   title: string
@@ -58,10 +49,3 @@ export type EditorActions =
         element: EditorNode
       }
     }
-
-export const nodeMapper: Record<string, string> = {
-  Notion: 'notionNode',
-  Slack: 'slackNode',
-  Discord: 'discordNode',
-  'Google Drive': 'googleNode',
-}

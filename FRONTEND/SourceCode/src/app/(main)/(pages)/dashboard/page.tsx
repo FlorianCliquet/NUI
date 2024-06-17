@@ -6,6 +6,7 @@ import NetworkGraph from './components/NetworkGraph';
 import useFetchNetworkData from './hooks/useFetchNetworkData';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import FlowInstance from './components/FlowInstance';
+import EditorCanvasSidebar from './components/editor-canvas-sidebar';
 
 const Dashboard = () => {
   const { nodes, edges, isLoading: fetchLoading, fetchNetworkData } = useFetchNetworkData();
@@ -13,6 +14,12 @@ const Dashboard = () => {
 
   const handleScanNetwork = async () => {
     setIsLoading(true);
+    await fetch ('http://localhost:5000/api/cache_status', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     await fetch('http://localhost:5000/api/clear_cache', {
       method: 'POST',
       headers: {
@@ -55,7 +62,7 @@ const Dashboard = () => {
                   isLoading={isLoading}
                   onScan={handleScanNetwork}
                 >
-                  <h1>Flow Instance</h1>
+                  <EditorCanvasSidebar nodes={nodes} />
                 </FlowInstance>
               </>
             )}

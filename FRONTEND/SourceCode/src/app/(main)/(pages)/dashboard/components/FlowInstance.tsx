@@ -1,7 +1,6 @@
 'use client';
 import { ScanButton } from './ScanButton';
 import React from 'react';
-import useFetchNetworkData from './../hooks/useFetchNetworkData';
 
 type Props = {
   children: React.ReactNode;

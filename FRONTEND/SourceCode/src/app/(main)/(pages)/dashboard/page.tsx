@@ -9,7 +9,7 @@ import FlowInstance from './components/FlowInstance';
 import EditorCanvasSidebar from './components/editor-canvas-sidebar';
 
 const Dashboard = () => {
-  const { nodes, edges, isLoading: fetchLoading, fetchNetworkData } = useFetchNetworkData();
+  const { nodes, edges, isLoading: fetchLoading, fetchNetworkData, routerIP } = useFetchNetworkData();
   const [isLoading, setIsLoading] = useState(fetchLoading);
 
   const handleScanNetwork = async () => {
@@ -62,7 +62,7 @@ const Dashboard = () => {
                   isLoading={isLoading}
                   onScan={handleScanNetwork}
                 >
-                  <EditorCanvasSidebar nodes={nodes} />
+                  <EditorCanvasSidebar nodes={nodes} routerIP={routerIP}/>
                 </FlowInstance>
               </>
             )}

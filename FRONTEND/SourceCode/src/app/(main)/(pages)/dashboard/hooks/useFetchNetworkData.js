@@ -149,7 +149,7 @@ const useFetchNetworkData = (viewportWidth, viewportHeight) => {
   }, [nodes, edges]);
 
   // Return nodes, edges, loading state, and fetch function for use in components
-  return { nodes, edges, isLoading, fetchNetworkData };
+  return { nodes, edges, isLoading, fetchNetworkData,routerIP };
 };
 
 export default useFetchNetworkData;

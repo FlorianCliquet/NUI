@@ -40,11 +40,11 @@ const initialEditorState: EditorState['editor'] = {
       description: '',
       metadata: {},
       title: '',
-      type: 'Trigger',
+      type: 'Router',
     },
     id: '',
     position: { x: 0, y: 0 },
-    type: 'Trigger',
+    type: 'Router',
   },
   edges: [],
 }

@@ -2,6 +2,26 @@
 
 This folder contains our entire BACKEND source code. While the code itself may lack detailed explanations, you can find comprehensive documentation in the Explanation folder for a deeper understanding of its workings.
 
+## Directory Structure
+
+SourceCode/
+├── main.py
+├── api/
+│   ├── __init__.py
+│   ├── ping_scan.py
+│   ├── host_info.py
+│   ├── network_info.py
+│   ├── cache_control.py
+│   ├── cache_status.py
+├── services/
+│   ├── __init__.py
+│   ├── network_scan.py
+│   ├── utilities.py
+├── cache/
+│   ├── __init__.py
+│   ├── cache.py
+
+
 ## Contents
 
 - **Backend Modules**: All the modules comprising the backend system.

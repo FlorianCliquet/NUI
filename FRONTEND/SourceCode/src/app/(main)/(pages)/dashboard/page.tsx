@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 import LoadingSpinner from './components/Loading';
-import { ScanButton } from './components/ScanButton';
 import NetworkGraph from './components/NetworkGraph';
 import useFetchNetworkData from './hooks/useFetchNetworkData';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';

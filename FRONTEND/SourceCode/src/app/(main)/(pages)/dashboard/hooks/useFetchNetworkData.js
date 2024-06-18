@@ -53,7 +53,7 @@ const useFetchNetworkData = (viewportWidth, viewportHeight) => {
         throw new Error('Failed to fetch');
       }
       const data = await response.json();
-      const formattedNodes = formatNodes(data); // Format fetched data into nodes
+      const formattedNodes = formatNodes(data.hosts); // Format fetched data into nodes
       const deviceEdges = createEdges(formattedNodes); // Create edges between nodes
       setNodes(formattedNodes); // Update nodes state
       setEdges(deviceEdges); // Update edges state

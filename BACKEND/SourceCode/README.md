@@ -21,7 +21,9 @@ SourceCode/
 │   ├── __init__.py
 │   ├── cache.py
 ├── utils/
-    ├── cache_utils.py
+│   ├── cache_utils.py
+├── logs/
+├── ├── every log stored here
 
 
 ## Contents

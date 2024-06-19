@@ -1,39 +1,49 @@
-from fastapi import APIRouter, HTTPException
+"""
+API endpoint for checking the cache status.
+
+Endpoints:
+- /api/cache_status:
+  GET:
+    tags: Cache
+    summary: Check Cache Status
+    description: Returns the current status of the cache.
+"""
+
+from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from fastapi_cache import FastAPICache
+import logging
 
 # Initialize the router
 router = APIRouter()
 
-@router.get("/cache_status")
+# Configure logging
+logger = logging.getLogger(__name__)
+
+@router.get("/cache_status", tags=["Cache"], summary="Check Cache Status")
 async def cache_status():
     """
     Check the status of the cache.
-
-    This endpoint returns whether the cache is empty or contains data,
-    along with a summary of the cache content.
+    
+    This endpoint returns the current status of the cache, including the number of items.
     """
+    logger.info("Checking cache status...")
+
     try:
-        # Access the cache backend instance
-        cache_instance = FastAPICache.get("default")
+        # Check if cache is initialized
+        if FastAPICache.get_backend():
+            logger.info("Cache backend found.")
+            redis = FastAPICache.get_backend().redis
+            keys = await redis.keys("fastapi-cache:*")
+            items = len(keys)
+            status = "filled" if items > 0 else "empty"
+            logger.info(f"Cache status: {status}, items: {items}")
+            return JSONResponse(status_code=200, content={"status": status, "items": items})
+        else:
+            logger.warning("Cache backend not initialized.")
+            return JSONResponse(status_code=200, content={"status": "not initialized", "items": 0})
 
-        if not cache_instance:
-            raise HTTPException(status_code=500, detail="Cache instance not found")
-
-        # Example: Retrieve all keys from the cache (specific to the backend used)
-        cache_keys = await cache_instance.keys()
-        cache_summary = {
-            "cache_empty": len(cache_keys) == 0,
-            "cache_summary": {key: str(type(await cache_instance.get(key))) for key in cache_keys}
-        }
-        
-        return JSONResponse(content=cache_summary, status_code=200)
-    except AttributeError:
-        # Handle case where the backend does not support 'keys()' method
-        cache_summary = {
-            "cache_empty": True,
-            "cache_summary": {}
-        }
-        return JSONResponse(content=cache_summary, status_code=200)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve cache status: {str(e)}")
+        error_message = f"Failed to check cache status: {str(e)}"
+        logger.error(error_message)
+        return JSONResponse(status_code=500, content={"error": error_message})

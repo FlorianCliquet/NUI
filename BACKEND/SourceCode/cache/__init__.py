@@ -1,3 +1,6 @@
+"""
+Init the cache
+"""
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import aioredis

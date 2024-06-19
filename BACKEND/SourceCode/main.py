@@ -1,3 +1,7 @@
+"""
+to init the API "sudo uvicorn main:app --host 0.0.0.0 --port 5000 --reload
+"
+"""
 import logging
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -187,4 +191,4 @@ if __name__ == '__main__':
     # Run FastAPI Application with Uvicorn
     #---------------------------------------------------------
 
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    uvicorn.run(app, host="0.0.0.0", port=5000, reload=True)

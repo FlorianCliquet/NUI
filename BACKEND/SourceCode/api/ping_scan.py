@@ -14,12 +14,17 @@ from fastapi.responses import JSONResponse
 from fastapi_cache.decorator import cache
 from services.network_scan import scan_network, get_active_hosts
 import logging
+from concurrent.futures import ThreadPoolExecutor
+
 
 # Initialize the router
 router = APIRouter()
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
+# Create a ThreadPoolExecutor for blocking I/O operations
+executor = ThreadPoolExecutor(max_workers=10)
 
 @router.get("/ping_scan", tags=["Ping Scan"], summary="Perform a Ping Scan")
 @cache(expire=600, namespace="ping_scan")
